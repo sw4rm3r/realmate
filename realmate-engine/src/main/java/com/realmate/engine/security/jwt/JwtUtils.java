@@ -2,8 +2,11 @@ package com.realmate.engine.security.jwt;
 
 import java.util.Date;
 
+import com.realmate.engine.models.User;
+import com.realmate.engine.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
@@ -21,6 +24,9 @@ public class JwtUtils {
 	@Value("${bezkoder.app.jwtExpirationMs}")
 	private int jwtExpirationMs;
 
+	@Autowired
+	UserRepository userRepository;
+
 	public String generateJwtToken(Authentication authentication) {
 
 		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
@@ -35,6 +41,11 @@ public class JwtUtils {
 
 	public String getUserNameFromJwtToken(String token) {
 		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+	}
+
+	public User getUserFromJwtToken(String token) {
+		String email = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
+		return userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Impossibile trovare utente con email" + email));
 	}
 
 	public boolean validateJwtToken(String authToken) {

@@ -37,7 +37,15 @@ public class User {
 
 	private String propic;
 
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	@Column(length = 15)
+	private Gender gender;
 
+	@Enumerated(EnumType.STRING)
+	@NotNull
+	@Column(length = 15)
+	private Gender genderPreference;
 
 	@NotBlank
 	@Size(max = 50)
@@ -54,16 +62,22 @@ public class User {
 				inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+	@PrimaryKeyJoinColumn
+	private Personality personality;
+
 	public User() {
 	}
 
-	public User(String username, String surname, Date birthDate, String propic, String email, String password) {
+	public User(String username, String surname, Date birthDate, String propic, String email,Gender gender, Gender genderPreference, String password) {
 		this.name = username;
 		this.email = email;
 		this.password = password;
 		this.surname = surname;
 		this.birthDate = birthDate;
 		this.propic = propic;
+		this.gender = gender;
+		this.genderPreference = genderPreference;
 	}
 
 	public Long getId() {
@@ -128,5 +142,29 @@ public class User {
 
 	public void setPropic(String propic) {
 		this.propic = propic;
+	}
+
+	public Personality getPersonality() {
+		return personality;
+	}
+
+	public void setPersonality(Personality personality) {
+		this.personality = personality;
+	}
+
+	public Gender getGender() {
+		return gender;
+	}
+
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
+
+	public Gender getGenderPreference() {
+		return genderPreference;
+	}
+
+	public void setGenderPreference(Gender genderPreference) {
+		this.genderPreference = genderPreference;
 	}
 }
